@@ -1,65 +1,23 @@
-const db = require('../DB');
+const express = require('express');
+const cors = require('cors');
 
-function obtenerTodos(req, res) {
-  db.query('SELECT * FROM restaurante', (err, result) => {
-    if (err) {
-      res.status(500).send('Error al obtener restaurantes');
-    } else {
-      res.json(result.rows);
-    }
-  });
-}
+const app = express();
+const PORT = 5000;
 
-function crear(req, res) {
-  const { nombre, ciudad, direccion, fecha_apertura } = req.body;
+app.use(cors());
+app.use(express.json());
 
-  if (!nombre || !ciudad || !direccion || !fecha_apertura) {
-    res.status(400).send('Faltan datos');
-  } else {
-    const sql = 'INSERT INTO restaurante (nombre, ciudad, direccion, fecha_apertura) VALUES ($1, $2, $3, $4)';
-    const params = [nombre, ciudad, direccion, fecha_apertura];
+app.get('/api/prueba', (req, res) => {
+  res.json({ message: 'API FUNCIONANDO CORRECTAMENTE', port: PORT });
+});
 
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        res.status(500).send('Error al crear restaurante');
-      } else {
-        res.send('Restaurante creado');
-      }
-    });
-  }
-}
+// Rutas principales (controllers)
+app.use('/api/restaurantes', require('./controllers/restaurante'));
+app.use('/api/empleados', require('./controllers/empleado'));
+app.use('/api/productos', require('./controllers/producto'));
+app.use('/api/pedidos', require('./controllers/pedido'));
+app.use('/api/detallepedidos', require('./controllers/detallepedido'));
 
-function actualizar(req, res) {
-  const id = req.params.id;
-  const { nombre, ciudad, direccion, fecha_apertura } = req.body;
-
-  const sql = 'UPDATE restaurante SET nombre=$1, ciudad=$2, direccion=$3, fecha_apertura=$4 WHERE id_rest=$5';
-  const params = [nombre, ciudad, direccion, fecha_apertura, id];
-
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      res.status(500).send('Error al actualizar');
-    } else {
-      res.send('Restaurante actualizado');
-    }
-  });
-}
-
-function eliminar(req, res) {
-  const id = req.params.id;
-
-  db.query('DELETE FROM restaurante WHERE id_rest=$1', [id], (err, result) => {
-    if (err) {
-      res.status(500).send('Error al eliminar');
-    } else {
-      res.send('Restaurante eliminado');
-    }
-  });
-}
-
-module.exports = {
-  obtenerTodos,
-  crear,
-  actualizar,
-  eliminar
-};
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
