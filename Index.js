@@ -11,12 +11,13 @@ app.get('/api/prueba', (req, res) => {
   res.json({ message: 'API FUNCIONANDO CORRECTAMENTE', port: PORT });
 });
 
-// Rutas principales (controllers)
 app.use('/api/restaurantes', require('./controllers/restaurante'));
 app.use('/api/empleados', require('./controllers/empleado'));
 app.use('/api/productos', require('./controllers/producto'));
 app.use('/api/pedidos', require('./controllers/pedido'));
 app.use('/api/detallepedidos', require('./controllers/detallepedido'));
+
+app.use('/api/consultas', require('./consultas/consultas'));
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
